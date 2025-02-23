@@ -69,7 +69,7 @@ def show_entries():
     """Displays all entries from the database or filters them by category."""
     db = get_db()
 
-    #get list of categories, duplicates are a big no no
+    #get list of categories, repeats are a no no
     cur = db.execute('select distinct category from entries')
     categories = cur.fetchall()
 
@@ -77,16 +77,15 @@ def show_entries():
     selected_category = request.args.get('category')
     if selected_category:
         cur = db.execute(
-            'select title, text, category from entries where category = ? order by id desc',
+            'select id, title, text, category from entries where category = ? order by id desc',  #make sure id is selected
             [selected_category]
         )
         entries = cur.fetchall()
     else:
         #otherwise, show all
-        cur = db.execute('select title, text, category from entries order by id desc')
+        cur = db.execute('select id, title, text, category from entries order by id desc')
         entries = cur.fetchall()
     return render_template('show_entries.html', entries=entries, categories=categories, selected_category=selected_category)
-
 
 @app.route('/add', methods=['POST'])
 def add_entry():
