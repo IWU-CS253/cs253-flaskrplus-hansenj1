@@ -2,18 +2,45 @@
 {% block body %}
   <form action="{{ url_for('add_entry') }}" method="post" class="add-entry">
     <dl>
-      <dt>Title:
-      <dd><input type="text" size="30" name="title">
-      <dt>Text:
-      <dd><textarea name="text" rows="5" cols="40"></textarea>
-      <dd><input type="submit" value="Share">
+      <dt>Title:</dt>
+      <dd><input type="text" size="30" name="title" required></dd>
+
+      <dt>Text:</dt>
+      <dd><textarea name="text" rows="5" cols="40" required></textarea></dd>
+
+      <dt>Category:</dt>
+      <dd><input type="text" size="30" name="category" placeholder="Enter a category"></dd>
+
+      <dd><input type="submit" value="Share"></dd>
     </dl>
   </form>
+
+  <form method="get" class="category-filter">
+    <label for="category">Filter:</label>
+    <select name="category" id="category" onchange="this.form.submit()">
+      <option value="">Categories</option>
+      {% for category in categories %}
+        <option value="{{ category['category'] }}" {% if category['category'] == selected_category %}selected{% endif %}>{{ category['category'] }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
   <ul class="entries">
   {% for entry in entries %}
-    <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}</li>
+    <li>
+      <h2>{{ entry.title }}</h2>
+      <p><strong>Category:</strong> {{ entry.category if entry.category else 'Uncategorized' }}</p>
+      <p>{{ entry.text|safe }}</p>
+      <form action="{{ url_for('delete_entry', id=entry['id']) }}" method="POST">
+        <input type="submit" value="Delete">
+      </form>
+    </li>
   {% else %}
-    <li><em>Unbelievable.  No entries here so far</em></li>
+    <li><em>Unbelievable. No entries here so far!</em></li>
   {% endfor %}
   </ul>
+
+  {% if selected_category %}
+    <a href="{{ url_for('show_entries') }}">Show all posts</a>
+  {% endif %}
 {% endblock %}

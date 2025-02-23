@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Flaskr
+    Flaskr plus
     ~~~~~~
 
     A microblog example application written as Flask tutorial with
@@ -64,19 +64,46 @@ def close_db(error):
         g.sqlite_db.close()
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def show_entries():
+    """Displays all entries from the database or filters them by category."""
     db = get_db()
-    cur = db.execute('select title, text from entries order by id desc')
-    entries = cur.fetchall()
-    return render_template('show_entries.html', entries=entries)
 
+    #get list of categories, repeats are a no no
+    cur = db.execute('select distinct category from entries')
+    categories = cur.fetchall()
+
+    #if a category is selected, filter by that category
+    selected_category = request.args.get('category')
+    if selected_category:
+        cur = db.execute(
+            'select id, title, text, category from entries where category = ? order by id desc',  #make sure id is selected
+            [selected_category]
+        )
+        entries = cur.fetchall()
+    else:
+        #otherwise, show all
+        cur = db.execute('select id, title, text, category from entries order by id desc')
+        entries = cur.fetchall()
+    return render_template('show_entries.html', entries=entries, categories=categories, selected_category=selected_category)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
+    """Adds a new post to the database with a user-defined category."""
     db = get_db()
-    db.execute('insert into entries (title, text) values (?, ?)',
-               [request.form['title'], request.form['text']])
+    db.execute(
+        'insert into entries (title, text, category) values (?, ?, ?)',  #modified to show category
+        [request.form['title'], request.form['text'], request.form['category']]
+    )
     db.commit()
-    flash('New entry was successfully posted')
+    flash('New entry was successfully posted!')
+    return redirect(url_for('show_entries'))
+
+@app.route('/delete/<int:id>', methods=['POST'])
+def delete_entry(id):
+    """Deletes the post with the given id from the database."""
+    db = get_db()
+    db.execute('delete from entries where id = (?)', [id])
+    db.commit()
+    flash('The post was successfully deleted.')
     return redirect(url_for('show_entries'))

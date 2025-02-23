@@ -1,8 +1,9 @@
 <!doctype html>
-<title>Flaskr</title>
+<title>Flaskr plus</title>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 <div class="page">
-  <h1>Flaskr</h1>
+  <h1>Flaskr plus(or flaskr+?)</h1>
+  <h6>slightly cooler than the normal flaskr</h6>
   {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
   {% endfor %}
