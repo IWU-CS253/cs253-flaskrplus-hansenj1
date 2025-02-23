@@ -99,3 +99,12 @@ def add_entry():
     db.commit()
     flash('New entry was successfully posted!')
     return redirect(url_for('show_entries'))
+
+@app.route('/delete/<int:id>', methods=['POST'])
+def delete_entry(id):
+    """Deletes the post with the given id from the database."""
+    db = get_db()
+    db.execute('delete from entries where id = (?)', [id])
+    db.commit()
+    flash('The post was successfully deleted.')
+    return redirect(url_for('show_entries'))
