@@ -1,23 +1,24 @@
 {% extends "layout.html" %}
 {% block body %}
-  <form action="{{ url_for('add_entry') }}" method="post" class="add-entry">
-    <dl>
-      <dt>Title:</dt>
-      <dd><input type="text" size="30" name="title" required></dd>
-
-      <dt>Text:</dt>
-      <dd><textarea name="text" rows="5" cols="40" required></textarea></dd>
-
-      <dt>Category:</dt>
-      <dd><input type="text" size="30" name="category" placeholder="Enter a category"></dd>
-
-      <dd><input type="submit" value="Share"></dd>
-    </dl>
+  <form action="{{ url_for('add_entry') }}" method="post" class="mb-4">
+    <div class="mb-3">
+      <label class="form-label">Title:</label>
+      <input type="text" class="form-control" name="title" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Text:</label>
+      <textarea name="text" class="form-control" rows="5" required></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Category:</label>
+      <input type="text" class="form-control" name="category" placeholder="Enter a category">
+    </div>
+    <button type="submit" class="btn btn-primary">Share</button>
   </form>
 
-  <form method="get" class="category-filter">
-    <label for="category">Filter:</label>
-    <select name="category" id="category" onchange="this.form.submit()">
+  <form method="get" class="mb-4">
+    <label for="category" class="form-label">Filter:</label>
+    <select name="category" id="category" class="form-select" onchange="this.form.submit()">
       <option value="">Categories</option>
       {% for category in categories %}
         <option value="{{ category['category'] }}" {% if category['category'] == selected_category %}selected{% endif %}>{{ category['category'] }}</option>
@@ -25,22 +26,29 @@
     </select>
   </form>
 
-  <ul class="entries">
+  <ul class="list-group">
   {% for entry in entries %}
-    <li>
-      <h2>{{ entry.title }}</h2>
-      <p><strong>Category:</strong> {{ entry.category if entry.category else 'Uncategorized' }}</p>
-      <p>{{ entry.text|safe }}</p>
-      <form action="{{ url_for('delete_entry', id=entry['id']) }}" method="POST">
-        <input type="submit" value="Delete">
-      </form>
+    <li class="list-group-item">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="mb-1">{{ entry.title }}</h5>
+          <p class="mb-1"><strong>Category:</strong> {{ entry.category if entry.category else 'Uncategorized' }}</p>
+        </div>
+        <div>
+          <a href="{{ url_for('edit_entry', id=entry['id']) }}" class="btn btn-warning btn-sm">Edit</a>
+          <form action="{{ url_for('delete_entry', id=entry['id']) }}" method="POST" class="d-inline">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </div>
+      </div>
+      <p class="mt-2">{{ entry.text|safe }}</p>
     </li>
   {% else %}
-    <li><em>Unbelievable. No entries here so far!</em></li>
+    <li class="list-group-item text-center"><em>Unbelievable. No entries here so far!</em></li>
   {% endfor %}
   </ul>
 
   {% if selected_category %}
-    <a href="{{ url_for('show_entries') }}">Show all posts</a>
+    <a href="{{ url_for('show_entries') }}" class="btn btn-secondary mt-3">Show all posts</a>
   {% endif %}
 {% endblock %}

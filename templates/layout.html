@@ -1,11 +1,19 @@
 <!doctype html>
-<title>Flaskr plus</title>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-<div class="page">
-  <h1>Flaskr plus(or flaskr+?)</h1>
-  <h6>slightly cooler than the normal flaskr</h6>
-  {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
-  {% endfor %}
-  {% block body %}{% endblock %}
-</div>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flaskr Plus</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container">
+    <div class="text-center my-4">
+        <h1>Flaskr Plus</h1>
+        <h6 class="text-muted">Slightly cooler than the normal Flaskr</h6>
+    </div>
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-info">{{ message }}</div>
+    {% endfor %}
+    {% block body %}{% endblock %}
+</body>
+</html>
