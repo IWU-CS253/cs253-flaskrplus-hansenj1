@@ -99,6 +99,21 @@ def add_entry():
     flash('New entry was successfully posted!')
     return redirect(url_for('show_entries'))
 
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit_entry(id):
+    """Edits an existing post in the database."""
+    db = get_db()
+    if request.method == 'POST':
+        db.execute('update entries set title = ?, text = ?, category = ? where id = ?',
+                   [request.form['title'], request.form['text'], request.form['category'], id])
+        db.commit()
+        flash('The post was successfully updated.')
+        return redirect(url_for('show_entries'))
+    else:
+        cur = db.execute('select id, title, text, category from entries where id = ?', [id])
+        entry = cur.fetchone()
+        return render_template('edit_entry.html', entry=entry)
+
 @app.route('/delete/<int:id>', methods=['POST'])
 def delete_entry(id):
     """Deletes the post with the given id from the database."""

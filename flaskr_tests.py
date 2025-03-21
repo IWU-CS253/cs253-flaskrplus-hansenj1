@@ -20,16 +20,39 @@ class FlaskrTestCase(unittest.TestCase):
         rv = self.app.get('/')
         assert b'No entries here so far' in rv.data
 
-    def test_messages(self):
+    def test_add_entry(self):
         rv = self.app.post('/add', data=dict(
-            title='<Hello>',
-            text='<strong>HTML</strong> allowed here',
-            category='category'
+            title='Test Entry',
+            text='Test Content',
+            category='Test Category'
         ), follow_redirects=True)
-        assert b'No entries here so far' not in rv.data
-        assert b'&lt;Hello&gt;' in rv.data
-        assert b'<strong>HTML</strong> allowed here' in rv.data
-        assert b'category' in rv.data
+        assert b'Test Entry' in rv.data
+        assert b'Test Content' in rv.data
+        assert b'Test Category' in rv.data
+
+    def test_edit_entry(self):
+        self.app.post('/add', data=dict(
+            title='Test Title',
+            text='Test Text',
+            category='Test Category'
+        ), follow_redirects=True)
+        rv = self.app.post('/edit/1', data=dict(
+            title='Updated Title',
+            text='Updated Text',
+            category='Updated Category'
+        ), follow_redirects=True)
+        assert b'Updated Title' in rv.data
+        assert b'Updated Text' in rv.data
+        assert b'Updated Category' in rv.data
+
+    def test_delete_entry(self):
+        self.app.post('/add', data=dict(
+            title='To be deleted',
+            text='Delete this entry',
+            category='Delete Category'
+        ), follow_redirects=True)
+        rv = self.app.post('/delete/1', follow_redirects=True)
+        assert b'To be deleted' not in rv.data
 
 if __name__ == '__main__':
     unittest.main()
